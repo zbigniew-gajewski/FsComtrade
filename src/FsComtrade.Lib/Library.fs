@@ -17,8 +17,6 @@ module CfgModule =
         match  int revisionYearString with
         | 1991 -> RevisionYear.Year1991        
         | 1999 -> RevisionYear.Year1999
-        | 2001 -> RevisionYear.Year2001
-        | 2013 -> RevisionYear.Year2013
         | _ -> RevisionYear.Year1991 
 
     let numberOfChannelsFromString (numberOfAnalogChannelsString : string) = // e.g. "12A"  or "3D"
