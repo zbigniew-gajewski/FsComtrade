@@ -40,13 +40,18 @@ module CfgModule =
         | "S" -> PhaseIdentifier.Secondary
         | _ -> PhaseIdentifier.Primary;
 
+    let mapChannelInfo (channelInfoStringSplitted : string[]) = 
+        {
+            Index = channelInfoStringSplitted.[0] |> int;
+            Identifier  = channelInfoStringSplitted.[1];
+            Phase = channelInfoStringSplitted.[2] |> mapPhase
+            CircuitComponent = channelInfoStringSplitted.[3] |> mapCircuitComponent
+        }
+
     let mapAnalogChannel (analogChannelInfoString : string) = 
         let analogChannelInfoStringSplitted = analogChannelInfoString.Split(splitter)
         {
-            Index  = analogChannelInfoStringSplitted.[0] |> int;
-            Identifier  = analogChannelInfoStringSplitted.[1];
-            Phase = analogChannelInfoStringSplitted.[2] |> mapPhase
-            CircuitComponent = analogChannelInfoStringSplitted.[3] |> mapCircuitComponent
+            ChannelInfo = analogChannelInfoStringSplitted.[0..3] |> mapChannelInfo;
             Unit = analogChannelInfoStringSplitted.[4]; 
             MultiplierA = analogChannelInfoStringSplitted.[5] |> float;
             OffsetAdderB = analogChannelInfoStringSplitted.[6] |> float; 
@@ -67,10 +72,7 @@ module CfgModule =
     let mapDigitalChannel (digitalChannelInfoString : string) = 
         let digitalChannelInfoStringSplitted = digitalChannelInfoString.Split(splitter)
         {
-            Index = digitalChannelInfoStringSplitted.[0] |> int;
-            Identifier = digitalChannelInfoStringSplitted.[1];
-            Phase = digitalChannelInfoStringSplitted.[2] |> mapPhase
-            CircuitComponent = digitalChannelInfoStringSplitted.[3] |> mapCircuitComponent
+            ChannelInfo = digitalChannelInfoStringSplitted.[0..3] |> mapChannelInfo;
             NormalState = digitalChannelInfoStringSplitted.[4] |> mapNormalState
         }
 

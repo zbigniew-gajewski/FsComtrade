@@ -10,22 +10,26 @@ module TypesModule =
     let splitter = ','
 
     type RevisionYear = 
-        | Year1991 = 1991
-        | Year1999 = 1999
+        | Year1991
+        | Year1999
 
     type PhaseIdentifier = 
-        | Primary = 'P'
-        | Secondary = 'S'
+        | Primary
+        | Secondary
 
     type NormalChannelState = 
-        | One = 1
-        | Zero = 0
+        | One
+        | Zero
 
-    type AnalogChannelInfo = {
+    type ChannelInfo = {
         Index : int;
         Identifier : string;
         Phase : string Option;
         CircuitComponent : string Option;
+    }
+
+    type AnalogChannelInfo = {
+        ChannelInfo : ChannelInfo;
         Unit : string;
         MultiplierA : float;
         OffsetAdderB : float;
@@ -38,10 +42,7 @@ module TypesModule =
     }
 
     type DigitalChannelInfo = {
-        Index : int;
-        Identifier : string;
-        Phase : string Option;
-        CircuitComponent : string Option;
+        ChannelInfo : ChannelInfo;
         NormalState : NormalChannelState;
     }
 
