@@ -15,7 +15,7 @@ module CfgModule =
         
     let getRevisionYear (revisionYearString : string) = 
         match  int revisionYearString with
-        | 1991 -> RevisionYear.Year1991
+        | 1991 -> RevisionYear.Year1991        
         | 1999 -> RevisionYear.Year1999
         | 2001 -> RevisionYear.Year2001
         | 2013 -> RevisionYear.Year2013
