@@ -1,6 +1,0 @@
-C:\TFS\FsComtrade\src\FsComtrade.Lib\bin\Debug\netstandard2.0\FsComtrade.Lib.deps.json
-C:\TFS\FsComtrade\src\FsComtrade.Lib\bin\Debug\netstandard2.0\FsComtrade.Lib.dll
-C:\TFS\FsComtrade\src\FsComtrade.Lib\bin\Debug\netstandard2.0\FsComtrade.Lib.pdb
-C:\TFS\FsComtrade\src\FsComtrade.Lib\obj\Debug\netstandard2.0\FsComtrade.Lib.fsproj.CoreCompileInputs.cache
-C:\TFS\FsComtrade\src\FsComtrade.Lib\obj\Debug\netstandard2.0\FsComtrade.Lib.dll
-C:\TFS\FsComtrade\src\FsComtrade.Lib\obj\Debug\netstandard2.0\FsComtrade.Lib.pdb
