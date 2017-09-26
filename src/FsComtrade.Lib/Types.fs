@@ -82,8 +82,8 @@ module TypesModule =
         RecordingDeviceId : string;
         RevisionYear :  RevisionYear;
         TotalNumberOfChannels : int;
-        AnalogNumberOfChannels : int;
-        DigitalNumberOfChannels : int;
+        NumberOfAnalogChannels : int;
+        NumberOfDigitalChannels : int;
         AnalogChannels : AnalogChannelInfo []; 
         DigitalChannels : DigitalChannelInfo []; 
         NominalFrequencyHz : float;

@@ -148,15 +148,15 @@ module CfgModule =
         let numberOfChannelsLineSplitted = numberOfChannelsLine.Split(splitter)
 
         let totalNumberOfChannels = int numberOfChannelsLineSplitted.[0]
-        let analogChannelsNumber = numberOfChannelsLineSplitted.[1] |> numberOfChannelsFromString
-        let digitalChannelsNumber = numberOfChannelsLineSplitted.[2] |> numberOfChannelsFromString
+        let numberOfAnalogChannels = numberOfChannelsLineSplitted.[1] |> numberOfChannelsFromString
+        let numberOfDigitalChannels = numberOfChannelsLineSplitted.[2] |> numberOfChannelsFromString
 
         // Analog and digital channel line indexes
         let firstAnalogChannelLineIndex = 2
-        let lastAnalogChannelLineIndex = firstAnalogChannelLineIndex + analogChannelsNumber - 1
+        let lastAnalogChannelLineIndex = firstAnalogChannelLineIndex + numberOfAnalogChannels - 1
 
         let firstDigitalChannelLineIndex = lastAnalogChannelLineIndex + 1
-        let lastDigitalChannelLineIndex = firstDigitalChannelLineIndex + digitalChannelsNumber - 1
+        let lastDigitalChannelLineIndex = firstDigitalChannelLineIndex + numberOfDigitalChannels - 1
         
         // analog channels
         let analogChannels = 
@@ -217,8 +217,8 @@ module CfgModule =
             RecordingDeviceId = recordingDeviceId; 
             RevisionYear = revisionYear;
             TotalNumberOfChannels = totalNumberOfChannels;
-            AnalogNumberOfChannels = analogChannelsNumber;
-            DigitalNumberOfChannels = digitalChannelsNumber;
+            NumberOfAnalogChannels = numberOfAnalogChannels;
+            NumberOfDigitalChannels = numberOfDigitalChannels;
             AnalogChannels = analogChannels;
             DigitalChannels = digitalChannels;
             NominalFrequencyHz = nominalFrequencyHz;
