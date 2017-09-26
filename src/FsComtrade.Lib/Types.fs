@@ -3,9 +3,9 @@ namespace FsComtrade.Lib.Types
 
 module TypesModule = 
 
-    type  FilePath = 
-       | FullFilePath of string 
-       | DirectoryAndFileName of string * string
+    // type  FilePath = 
+    //    | FullFilePath of string 
+    //    | DirectoryAndFileNameNoExtension of string * string
 
     let splitter = ','
 
@@ -27,13 +27,13 @@ module TypesModule =
 
     type AnalogSample = {
         Number : int;
-        TimeStamp : uint32
+        TimeStamp : uint64
         SampleValue : float
     }
 
     type DigitalSample = {
         Number : int;
-        TimeStamp : uint32
+        TimeStamp : uint64
         SampleValue : Bit
     }
 
@@ -55,13 +55,13 @@ module TypesModule =
         PrimaryFactor : float;
         SecondaryFactor : float;
         PrimarySecondaryIdentifier : PhaseIdentifier;
-        Samples : AnalogSample array;
+        Samples : AnalogSample [];
     } 
 
     type DigitalChannelInfo = {
         ChannelInfo : ChannelInfo;
         NormalState : NormalChannelState;
-        Samples : DigitalSample array;
+        Samples : DigitalSample [];
     }
 
     type SamplingRate = {
@@ -92,4 +92,20 @@ module TypesModule =
         TriggerPointTimeStamp : System.DateTime;
         FileType : FileType;
         MultiplicationFactor : float;
+    }
+
+    type SampleLine = {
+        Number : int;
+        TimeStamp : uint64;
+        AnalogSampleValues : float [];
+        DigitalSampleValues : Bit [];
+    }
+
+    type DatFile = {
+        SampleLines : SampleLine [];
+    }
+
+    type ComtradeFile = {
+        CfgFile : CfgFile;
+        DatFile : DatFile;
     }

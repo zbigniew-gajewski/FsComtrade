@@ -6,12 +6,11 @@ module CfgModule =
     open System.IO
     open FsComtrade.Lib.Types.TypesModule
 
-    let getCfgFileLines (fileSource : FilePath) =
-        match fileSource with
-        | FullFilePath (fullFilePath) -> 
-            File.ReadAllLines fullFilePath
-        | DirectoryAndFileName (fileDirectory, fileName) -> 
-            File.ReadAllLines (Path.Combine (fileDirectory, fileName)) 
+    let mapFile (directory : string, fileNameWithoutExtension : string) =
+        let filePathNoExtension = Path.Combine (directory, fileNameWithoutExtension)
+        let cfgFilePath = filePathNoExtension + ".cfg" 
+        let datFilePath = filePathNoExtension + ".dat" 
+        File.ReadAllLines (cfgFilePath), File.ReadAllLines(datFilePath)
         
     let getRevisionYear (revisionYearString : string) = 
         match  int revisionYearString with
@@ -229,5 +228,38 @@ module CfgModule =
             FileType = fileType;
             MultiplicationFactor = multiplicationFactor
         }        
+
+    let mapDatFileLine (fileLine : string, numberOfAnalogChannels : int, numberOfDigitalChannels : int ) = 
+        let fileLineSplitted = fileLine.Split(splitter)
+        let firstAnalogChannelColumnIndex = 2
+        let lastAnalogChannelColumnIndex = firstAnalogChannelColumnIndex + numberOfAnalogChannels - 1
+        let firstDigitalChannelColumnIndex = lastAnalogChannelColumnIndex + 1
+        let lastDigitalChannelColumnIndex = firstDigitalChannelColumnIndex + numberOfDigitalChannels - 1
+
+        let mapBit (bitString : string) = 
+            match bitString with
+            | "0" -> Bit.Zero
+            | "1" -> Bit.One
+            | _ -> Bit.Zero
+
+        // result: SampleLine
+        {
+            Number = fileLineSplitted.[0] |> int;
+            TimeStamp = fileLineSplitted.[1] |> uint64;
+            AnalogSampleValues = fileLineSplitted.[firstAnalogChannelColumnIndex..lastAnalogChannelColumnIndex] 
+                |>  Array.map float;
+            DigitalSampleValues = fileLineSplitted.[firstDigitalChannelColumnIndex..lastDigitalChannelColumnIndex] 
+                |>  Array.map mapBit;
+        }
+
+    let mapDatFile (datFileLines : string [], numberOfAnalogChannels : int, numberOfDigitalChannels : int) = 
+        let mapLineFn = fun line -> mapDatFileLine (line, numberOfAnalogChannels, numberOfDigitalChannels)
+        let sampleLines = datFileLines |> Array.map mapLineFn
+        // result : SampleLines
+        { 
+            SampleLines = sampleLines
+        }
+
+
         
        

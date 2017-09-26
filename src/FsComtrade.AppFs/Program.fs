@@ -5,10 +5,9 @@ open FsComtrade.Lib.Mappers.CfgModule
 
 [<EntryPoint>]
 let main argv =
-    let cfgFile = 
-        (FullFilePath "..\FsComtrade\src\Resources\TestFiles\Test.cfg")
-        |> getCfgFileLines
-        |> mapCfgFile
+    let cfgFileLines, datFileLines = mapFile ("..\FsComtrade\src\Resources\TestFiles", "TestFile01")
+    let cfgFile = cfgFileLines |> mapCfgFile
+    let datFile =  mapDatFile (datFileLines, cfgFile.AnalogNumberOfChannels, cfgFile.DigitalNumberOfChannels)
       
     printfn "%s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n" 
         cfgFile.StationName 
