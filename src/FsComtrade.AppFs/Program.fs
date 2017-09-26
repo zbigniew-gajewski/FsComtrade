@@ -5,20 +5,20 @@ open FsComtrade.Lib.Mappers.MappersModule
 
 [<EntryPoint>]
 let main argv =
-    let cfgFileLines, datFileLines = mapFile ("..\FsComtrade\src\Resources\TestFiles", "TestFile01")
-    let cfgFile = cfgFileLines |> mapCfgFile
-    let datFile =  mapDatFile (datFileLines, cfgFile.NumberOfAnalogChannels, cfgFile.NumberOfDigitalChannels)
+    let comtradeFile = 
+        ("..\FsComtrade\src\Resources\TestFiles", "TestFile01")
+        |> mapComtradeFile
       
     printfn "%s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n" 
-        cfgFile.StationName 
-        cfgFile.RecordingDeviceId 
-        (cfgFile.RevisionYear.ToString())
-        (cfgFile.TotalNumberOfChannels.ToString()) 
-        (cfgFile.NumberOfAnalogChannels.ToString()) 
-        (cfgFile.NumberOfDigitalChannels.ToString())
-        (cfgFile.NominalFrequencyHz.ToString())
-        (cfgFile.FirstSampleTimeStamp.ToString())
-        (cfgFile.TriggerPointTimeStamp.ToString())
-        (cfgFile.FileType.ToString())
-        (cfgFile.MultiplicationFactor.ToString())
+        comtradeFile.CfgFile.StationName 
+        comtradeFile.CfgFile.RecordingDeviceId 
+        (comtradeFile.CfgFile.RevisionYear.ToString())
+        (comtradeFile.CfgFile.TotalNumberOfChannels.ToString()) 
+        (comtradeFile.CfgFile.NumberOfAnalogChannels.ToString()) 
+        (comtradeFile.CfgFile.NumberOfDigitalChannels.ToString())
+        (comtradeFile.CfgFile.NominalFrequencyHz.ToString())
+        (comtradeFile.CfgFile.FirstSampleTimeStamp.ToString())
+        (comtradeFile.CfgFile.TriggerPointTimeStamp.ToString())
+        (comtradeFile.CfgFile.FileType.ToString())
+        (comtradeFile.CfgFile.MultiplicationFactor.ToString())
     0 // return an integer exit code

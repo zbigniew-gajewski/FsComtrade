@@ -3,10 +3,6 @@ namespace FsComtrade.Lib.Types
 
 module TypesModule = 
 
-    // type  FilePath = 
-    //    | FullFilePath of string 
-    //    | DirectoryAndFileNameNoExtension of string * string
-
     let splitter = ','
 
     type RevisionYear = 
@@ -26,23 +22,23 @@ module TypesModule =
         | One = 0b1
 
     type ChannelInfo = {
-        Index : int;
-        Identifier : string;
-        Phase : string Option;
-        CircuitComponent : string Option;
+        Index : int
+        Identifier : string
+        Phase : string Option
+        CircuitComponent : string Option
     }
 
     type AnalogChannelInfo = {
-        ChannelInfo : ChannelInfo;
-        Unit : string;
-        MultiplierA : float;
-        OffsetAdderB : float;
-        TimeSkew : float;
-        MinDataValue : float;
-        MaxDataValue : float;
-        PrimaryFactor : float;
-        SecondaryFactor : float;
-        PrimarySecondaryIdentifier : PhaseIdentifier;
+        ChannelInfo : ChannelInfo
+        Unit : string
+        MultiplierA : float
+        OffsetAdderB : float
+        TimeSkew : float
+        MinDataValue : float
+        MaxDataValue : float
+        PrimaryFactor : float
+        SecondaryFactor : float
+        PrimarySecondaryIdentifier : PhaseIdentifier
     } 
 
     type DigitalChannelInfo = {
@@ -64,34 +60,34 @@ module TypesModule =
         | BINARY
            
     type CfgFile = { 
-        StationName : string;
-        RecordingDeviceId : string;
-        RevisionYear :  RevisionYear;
-        TotalNumberOfChannels : int;
-        NumberOfAnalogChannels : int;
-        NumberOfDigitalChannels : int;
-        AnalogChannels : AnalogChannelInfo array; 
-        DigitalChannels : DigitalChannelInfo array; 
-        NominalFrequencyHz : float;
-        SamplingRates : SamplingRateInfo;
-        FirstSampleTimeStamp : System.DateTime;
-        TriggerPointTimeStamp : System.DateTime;
-        FileType : FileType;
-        MultiplicationFactor : float;
+        StationName : string
+        RecordingDeviceId : string
+        RevisionYear :  RevisionYear
+        TotalNumberOfChannels : int
+        NumberOfAnalogChannels : int
+        NumberOfDigitalChannels : int
+        AnalogChannels : AnalogChannelInfo array
+        DigitalChannels : DigitalChannelInfo array
+        NominalFrequencyHz : float
+        SamplingRates : SamplingRateInfo
+        FirstSampleTimeStamp : System.DateTime
+        TriggerPointTimeStamp : System.DateTime
+        FileType : FileType
+        MultiplicationFactor : float
     }
 
     type SampleLine = {
         Number : int;
         TimeStamp : uint64;
-        AnalogSampleValues : float array;
-        DigitalSampleValues : Bit array;
+        AnalogSampleValues : float array
+        DigitalSampleValues : Bit array
     }
 
     type DatFile = {
-        SampleLines : SampleLine array;
+        SampleLines : SampleLine array
     }
 
     type ComtradeFile = {
-        CfgFile : CfgFile;
-        DatFile : DatFile;
+        CfgFile : CfgFile
+        DatFile : DatFile
     }

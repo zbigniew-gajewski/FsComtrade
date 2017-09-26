@@ -24,10 +24,10 @@ module MappersModule =
         let numberOfDigitalChannels = numberOfChannelsLineSplitted.[2] |> mapSingleNumberOfChannels
         totalNumberOfChannels, numberOfAnalogChannels, numberOfDigitalChannels
 
-    let mapPhase (analogChannelInfoString : string) = 
-        match analogChannelInfoString with
+    let mapPhase (phaseString : string) = 
+        match phaseString with
         | "" -> None;
-        | _ -> Some analogChannelInfoString;
+        | _ -> Some phaseString;
 
     let mapCircuitComponent (cuircitComponentString : string) = 
         match cuircitComponentString with
@@ -43,7 +43,7 @@ module MappersModule =
     let mapChannelInfo (channelInfoStringSplitted : string[]) = 
         {
             Index = channelInfoStringSplitted.[0] |> int;
-            Identifier  = channelInfoStringSplitted.[1];
+            Identifier = channelInfoStringSplitted.[1];
             Phase = channelInfoStringSplitted.[2] |> mapPhase
             CircuitComponent = channelInfoStringSplitted.[3] |> mapCircuitComponent
         }
@@ -51,16 +51,16 @@ module MappersModule =
     let mapAnalogChannel (analogChannelInfoString : string) = 
         let analogChannelInfoStringSplitted = analogChannelInfoString.Split(splitter)
         {
-            ChannelInfo = analogChannelInfoStringSplitted.[0..3] |> mapChannelInfo;
-            Unit = analogChannelInfoStringSplitted.[4]; 
-            MultiplierA = analogChannelInfoStringSplitted.[5] |> float;
-            OffsetAdderB = analogChannelInfoStringSplitted.[6] |> float; 
-            TimeSkew = analogChannelInfoStringSplitted.[7] |> float; 
-            MinDataValue = analogChannelInfoStringSplitted.[8] |> float;  
-            MaxDataValue = analogChannelInfoStringSplitted.[9] |> float; 
-            PrimaryFactor = analogChannelInfoStringSplitted.[10] |> float; 
-            SecondaryFactor = analogChannelInfoStringSplitted.[11] |> float; 
-            PrimarySecondaryIdentifier = analogChannelInfoStringSplitted.[12] |> mapPrimarySecondaryIdentifier; 
+            ChannelInfo = analogChannelInfoStringSplitted.[0..3] |> mapChannelInfo
+            Unit = analogChannelInfoStringSplitted.[4] 
+            MultiplierA = analogChannelInfoStringSplitted.[5] |> float
+            OffsetAdderB = analogChannelInfoStringSplitted.[6] |> float 
+            TimeSkew = analogChannelInfoStringSplitted.[7] |> float
+            MinDataValue = analogChannelInfoStringSplitted.[8] |> float  
+            MaxDataValue = analogChannelInfoStringSplitted.[9] |> float 
+            PrimaryFactor = analogChannelInfoStringSplitted.[10] |> float 
+            SecondaryFactor = analogChannelInfoStringSplitted.[11] |> float 
+            PrimarySecondaryIdentifier = analogChannelInfoStringSplitted.[12] |> mapPrimarySecondaryIdentifier 
         }
     
     let mapNormalState (normalStateString : string) =
@@ -208,19 +208,19 @@ module MappersModule =
 
         // result : CfgFile
         { 
-            StationName = stationName; 
-            RecordingDeviceId = recordingDeviceId; 
-            RevisionYear = revisionYear;
-            TotalNumberOfChannels = totalNumberOfChannels;
-            NumberOfAnalogChannels = numberOfAnalogChannels;
-            NumberOfDigitalChannels = numberOfDigitalChannels;
-            AnalogChannels = analogChannels;
-            DigitalChannels = digitalChannels;
-            NominalFrequencyHz = nominalFrequencyHz;
-            SamplingRates = samplingRateInfo;
-            FirstSampleTimeStamp = firstSampleTimeStamp;
-            TriggerPointTimeStamp = triggerPointTimeStamp;
-            FileType = fileType;
+            StationName = stationName 
+            RecordingDeviceId = recordingDeviceId 
+            RevisionYear = revisionYear
+            TotalNumberOfChannels = totalNumberOfChannels
+            NumberOfAnalogChannels = numberOfAnalogChannels
+            NumberOfDigitalChannels = numberOfDigitalChannels
+            AnalogChannels = analogChannels
+            DigitalChannels = digitalChannels
+            NominalFrequencyHz = nominalFrequencyHz
+            SamplingRates = samplingRateInfo
+            FirstSampleTimeStamp = firstSampleTimeStamp
+            TriggerPointTimeStamp = triggerPointTimeStamp
+            FileType = fileType
             MultiplicationFactor = multiplicationFactor
         }        
 
@@ -248,20 +248,36 @@ module MappersModule =
                 |>  Array.map mapBit;
         }
 
-    let mapDatFile (datFileLines : string [], numberOfAnalogChannels : int, numberOfDigitalChannels : int) = 
+    let mapAsciiDatFile (datFileLines : string [], numberOfAnalogChannels : int, numberOfDigitalChannels : int) = 
         let mapLineFn = fun line -> mapDatFileLine (line, numberOfAnalogChannels, numberOfDigitalChannels)
         let sampleLines = datFileLines |> Array.map mapLineFn
         // result : SampleLines
         { 
             SampleLines = sampleLines
         }
+        
+    let mapBinaryDatFile (datFileBinaryArray : byte [], numberOfAnalogChannels : int, numberOfDigitalChannels : int) = 
+        //todo: convert byte[] to Ascii lines 
+        // result : SampleLines
+        { 
+            SampleLines = Array.empty 
+        }
 
-    let mapFile (directory : string, fileNameWithoutExtension : string) =
+    let mapComtradeFile (directory : string, fileNameWithoutExtension : string) = 
         let filePathNoExtension = Path.Combine (directory, fileNameWithoutExtension)
         let cfgFilePath = filePathNoExtension + ".cfg" 
         let datFilePath = filePathNoExtension + ".dat" 
-        File.ReadAllLines (cfgFilePath), File.ReadAllLines(datFilePath)
-
-
-        
-       
+        let cfgFile = File.ReadAllLines(cfgFilePath) |> mapCfgFile
+        let datFile = 
+            match cfgFile.FileType with
+            | FileType.ASCII -> 
+                let asciiFile = File.ReadAllLines(datFilePath)
+                mapAsciiDatFile (asciiFile, cfgFile.NumberOfAnalogChannels, cfgFile.NumberOfDigitalChannels)
+            | FileType.BINARY -> 
+                let binaryFile = File.ReadAllBytes(datFilePath)
+                mapBinaryDatFile (binaryFile, cfgFile.NumberOfAnalogChannels, cfgFile.NumberOfDigitalChannels)
+        // result : ComtradeFile
+        {
+            CfgFile = cfgFile
+            DatFile = datFile
+        }                  
