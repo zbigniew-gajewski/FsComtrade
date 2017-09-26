@@ -1,7 +1,7 @@
 ﻿open System
 open FsComtrade.Lib
 open FsComtrade.Lib.Types.TypesModule
-open FsComtrade.Lib.Mappers.CfgModule
+open FsComtrade.Lib.Mappers.MappersModule
 
 [<EntryPoint>]
 let main argv =

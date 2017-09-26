@@ -1,28 +1,29 @@
 namespace FsComtrade.Lib.Mappers
 
-module CfgModule =
+module MappersModule =
 
     open System
     open System.IO
     open FsComtrade.Lib.Types.TypesModule
-
-    let mapFile (directory : string, fileNameWithoutExtension : string) =
-        let filePathNoExtension = Path.Combine (directory, fileNameWithoutExtension)
-        let cfgFilePath = filePathNoExtension + ".cfg" 
-        let datFilePath = filePathNoExtension + ".dat" 
-        File.ReadAllLines (cfgFilePath), File.ReadAllLines(datFilePath)
-        
+       
     let getRevisionYear (revisionYearString : string) = 
         match  int revisionYearString with
         | 1991 -> RevisionYear.Year1991        
         | 1999 -> RevisionYear.Year1999
         | _ -> RevisionYear.Year1991 
 
-    let numberOfChannelsFromString (numberOfAnalogChannelsString : string) = // e.g. "12A"  or "3D"
-        let stringLength = numberOfAnalogChannelsString.Length
-        numberOfAnalogChannelsString.Substring(0, stringLength - 1) 
+    let mapSingleNumberOfChannels (numberOfChannelsString : string) = // e.g. "12A" or "3D"
+        let stringLength = numberOfChannelsString.Length
+        numberOfChannelsString.Substring(0, stringLength - 1) 
         |> int
-    
+
+    let mapNumberOfChannels (numberOfChannelsString : string) = // e.g. "15,12A,3D"
+        let numberOfChannelsLineSplitted = numberOfChannelsString.Split(splitter)
+        let totalNumberOfChannels = numberOfChannelsLineSplitted.[0] |> int
+        let numberOfAnalogChannels = numberOfChannelsLineSplitted.[1] |> mapSingleNumberOfChannels
+        let numberOfDigitalChannels = numberOfChannelsLineSplitted.[2] |> mapSingleNumberOfChannels
+        totalNumberOfChannels, numberOfAnalogChannels, numberOfDigitalChannels
+
     let mapPhase (analogChannelInfoString : string) = 
         match analogChannelInfoString with
         | "" -> None;
@@ -97,11 +98,11 @@ module CfgModule =
         let dateTimeStringSplitted = dateTimeString.Split(splitter)
         
         let dateSplitted = dateTimeStringSplitted.[0].Split('/')
-        let (day, month, year) = 
+        let day, month, year = 
             if revisionYear = RevisionYear.Year1991 then
-                (int dateSplitted.[1], int dateSplitted.[0], int ("19" + dateSplitted.[2])) 
+                int dateSplitted.[1], int dateSplitted.[0], int ("19" + dateSplitted.[2])
             else
-                (int dateSplitted.[0], int dateSplitted.[1], int dateSplitted.[2]) 
+                int dateSplitted.[0], int dateSplitted.[1], int dateSplitted.[2]
         
         let timeSplitted = dateTimeStringSplitted.[1].Split(':')
         let hours = int timeSplitted.[0]
@@ -138,23 +139,19 @@ module CfgModule =
         // Station name, Id, revision year (line 0)
         let firstLine = cfgFileLines.[0]
         let firstLineSplitted = firstLine.Split(splitter) 
-
         let stationName = firstLineSplitted.[0]
         let recordingDeviceId = firstLineSplitted.[1]
         let revisionYear = getRevisionYear firstLineSplitted.[2]
 
-        // Number of channels (line 1)
-        let numberOfChannelsLine = cfgFileLines.[1]
-        let numberOfChannelsLineSplitted = numberOfChannelsLine.Split(splitter)
-
-        let totalNumberOfChannels = int numberOfChannelsLineSplitted.[0]
-        let numberOfAnalogChannels = numberOfChannelsLineSplitted.[1] |> numberOfChannelsFromString
-        let numberOfDigitalChannels = numberOfChannelsLineSplitted.[2] |> numberOfChannelsFromString
-
+        // Number of channels (line 1)       
+        let numberOfChannelsLineIndex = 1
+        let totalNumberOfChannels, numberOfAnalogChannels, numberOfDigitalChannels = 
+            cfgFileLines.[numberOfChannelsLineIndex] 
+            |> mapNumberOfChannels
+        
         // Analog and digital channel line indexes
         let firstAnalogChannelLineIndex = 2
         let lastAnalogChannelLineIndex = firstAnalogChannelLineIndex + numberOfAnalogChannels - 1
-
         let firstDigitalChannelLineIndex = lastAnalogChannelLineIndex + 1
         let lastDigitalChannelLineIndex = firstDigitalChannelLineIndex + numberOfDigitalChannels - 1
         
@@ -229,6 +226,7 @@ module CfgModule =
             MultiplicationFactor = multiplicationFactor
         }        
 
+    // .dat file
     let mapDatFileLine (fileLine : string, numberOfAnalogChannels : int, numberOfDigitalChannels : int ) = 
         let fileLineSplitted = fileLine.Split(splitter)
         let firstAnalogChannelColumnIndex = 2
@@ -259,6 +257,12 @@ module CfgModule =
         { 
             SampleLines = sampleLines
         }
+
+    let mapFile (directory : string, fileNameWithoutExtension : string) =
+        let filePathNoExtension = Path.Combine (directory, fileNameWithoutExtension)
+        let cfgFilePath = filePathNoExtension + ".cfg" 
+        let datFilePath = filePathNoExtension + ".dat" 
+        File.ReadAllLines (cfgFilePath), File.ReadAllLines(datFilePath)
 
 
         

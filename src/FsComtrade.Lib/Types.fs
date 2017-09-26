@@ -84,8 +84,8 @@ module TypesModule =
         TotalNumberOfChannels : int;
         NumberOfAnalogChannels : int;
         NumberOfDigitalChannels : int;
-        AnalogChannels : AnalogChannelInfo []; 
-        DigitalChannels : DigitalChannelInfo []; 
+        AnalogChannels : AnalogChannelInfo array; 
+        DigitalChannels : DigitalChannelInfo array; 
         NominalFrequencyHz : float;
         SamplingRates : SamplingRateInfo;
         FirstSampleTimeStamp : System.DateTime;
@@ -97,12 +97,12 @@ module TypesModule =
     type SampleLine = {
         Number : int;
         TimeStamp : uint64;
-        AnalogSampleValues : float [];
-        DigitalSampleValues : Bit [];
+        AnalogSampleValues : float array;
+        DigitalSampleValues : Bit array;
     }
 
     type DatFile = {
-        SampleLines : SampleLine [];
+        SampleLines : SampleLine array;
     }
 
     type ComtradeFile = {
