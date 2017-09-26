@@ -25,18 +25,6 @@ module TypesModule =
         | Zero = 0b0
         | One = 0b1
 
-    type AnalogSample = {
-        Number : int;
-        TimeStamp : uint64
-        SampleValue : float
-    }
-
-    type DigitalSample = {
-        Number : int;
-        TimeStamp : uint64
-        SampleValue : Bit
-    }
-
     type ChannelInfo = {
         Index : int;
         Identifier : string;
@@ -55,13 +43,11 @@ module TypesModule =
         PrimaryFactor : float;
         SecondaryFactor : float;
         PrimarySecondaryIdentifier : PhaseIdentifier;
-        Samples : AnalogSample [];
     } 
 
     type DigitalChannelInfo = {
         ChannelInfo : ChannelInfo;
         NormalState : NormalChannelState;
-        Samples : DigitalSample [];
     }
 
     type SamplingRate = {
