@@ -1,8 +1,10 @@
 
 namespace FsComtrade.Lib.Types
 
-module TypesModule = 
+open System 
 
+module TypesModule = 
+    
     let splitter = ','
 
     type RevisionYear = 
@@ -18,8 +20,8 @@ module TypesModule =
         | Zero
 
     type Bit = 
-        | Zero = 0b0
-        | One = 0b1
+        | Zero = 0
+        | One = 1
 
     type ChannelInfo = {
         Index : int
@@ -58,6 +60,11 @@ module TypesModule =
     type FileType = 
         | ASCII
         | BINARY
+
+    type DateWithNanoseconds = {
+        DateWithSeconds : DateTime
+        Nanoseconds : int
+    }
            
     type CfgFile = { 
         StationName : string
@@ -70,8 +77,8 @@ module TypesModule =
         DigitalChannels : DigitalChannelInfo array
         NominalFrequencyHz : float
         SamplingRates : SamplingRateInfo
-        FirstSampleTimeStamp : System.DateTime
-        TriggerPointTimeStamp : System.DateTime
+        FirstSampleTimeStamp : DateWithNanoseconds
+        TriggerPointTimeStamp : DateWithNanoseconds
         FileType : FileType
         MultiplicationFactor : float
     }

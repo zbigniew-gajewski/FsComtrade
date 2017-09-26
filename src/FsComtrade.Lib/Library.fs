@@ -84,12 +84,12 @@ module MappersModule =
             LastSampleNumber = samplingRateSplitted.[1] |> int
         }
 
-    let mapSecondsFraction (secondsFractionString : string) = 
+    let mapNanoseconds (secondsFractionString : string) = 
         match secondsFractionString.Length with
-        | 3 -> int secondsFractionString 
-        | 6 -> int secondsFractionString / 1000
-        | 9 -> int secondsFractionString / 1000_000
-        | _ -> int (secondsFractionString.Substring(0,3))
+        | 3 -> int secondsFractionString * 1000_000
+        | 6 -> int secondsFractionString * 1000
+        | 9 -> int secondsFractionString
+        | _ -> int (secondsFractionString.Substring(0,3)) 
 
     let mapDateTime (dateTimeString : string, revisionYear : RevisionYear) = 
         
@@ -108,10 +108,14 @@ module MappersModule =
         
         let secondsSplitted = timeSplitted.[2].Split('.')
         let seconds = int secondsSplitted.[0]
-        let milliseconds = secondsSplitted.[1] |> mapSecondsFraction        
+        let nanoseconds = secondsSplitted.[1] |> mapNanoseconds
 
         // result DateTime
-        DateTime(year, month, day, hours, minutes, seconds, milliseconds)    
+        {
+            DateWithSeconds = DateTime(year, month, day, hours, minutes, seconds)
+            Nanoseconds = nanoseconds
+        }
+        
 
     let mapSamplingRateInfo (cfgFileLines : string[], numberOfSamplingRatesLineIndex : int, numberOfSamplingRates : int) =
         match numberOfSamplingRates with
