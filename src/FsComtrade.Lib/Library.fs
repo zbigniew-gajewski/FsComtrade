@@ -268,16 +268,18 @@ module MappersModule =
         let cfgFilePath = filePathNoExtension + ".cfg" 
         let datFilePath = filePathNoExtension + ".dat" 
         let cfgFile = File.ReadAllLines(cfgFilePath) |> mapCfgFile
+        let numberOfAnalogChannels = cfgFile.NumberOfAnalogChannels
+        let numberOfDigitalChannels = cfgFile.NumberOfDigitalChannels
         let datFile = 
             match cfgFile.FileType with
             | FileType.ASCII -> 
                 let asciiFile = File.ReadAllLines(datFilePath)
-                mapAsciiDatFile (asciiFile, cfgFile.NumberOfAnalogChannels, cfgFile.NumberOfDigitalChannels)
+                mapAsciiDatFile (asciiFile, numberOfAnalogChannels, numberOfDigitalChannels)
             | FileType.BINARY -> 
                 let binaryFile = File.ReadAllBytes(datFilePath)
-                mapBinaryDatFile (binaryFile, cfgFile.NumberOfAnalogChannels, cfgFile.NumberOfDigitalChannels)
+                mapBinaryDatFile (binaryFile, numberOfAnalogChannels, numberOfDigitalChannels)
         // result : ComtradeFile
         {
             CfgFile = cfgFile
             DatFile = datFile
-        }                  
+        }
