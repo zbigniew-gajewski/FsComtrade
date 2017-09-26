@@ -61,6 +61,7 @@ module CfgModule =
             PrimaryFactor = analogChannelInfoStringSplitted.[10] |> float; 
             SecondaryFactor = analogChannelInfoStringSplitted.[11] |> float; 
             PrimarySecondaryIdentifier = analogChannelInfoStringSplitted.[12] |> mapPrimarySecondaryIdentifier; 
+            Samples = Array.empty;
         }
     
     let mapNormalState (normalStateString : string) =
@@ -73,7 +74,8 @@ module CfgModule =
         let digitalChannelInfoStringSplitted = digitalChannelInfoString.Split(splitter)
         {
             ChannelInfo = digitalChannelInfoStringSplitted.[0..3] |> mapChannelInfo;
-            NormalState = digitalChannelInfoStringSplitted.[4] |> mapNormalState
+            NormalState = digitalChannelInfoStringSplitted.[4] |> mapNormalState;
+            Samples = Array.empty;
         }
 
     let mapSamplingRates (samplingRateString : string) =
