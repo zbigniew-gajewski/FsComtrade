@@ -6,6 +6,6 @@ You can buy and read the standard here: https://standards.ieee.org/findstds/stan
 
 FsComtrade.Lib - library
 FsComtrade.App.Fs - F# consumer 
-FsComtrade.App.Cs - C# consumer (open in VS2017, uncomment)
+FsComtrade.App.Cs - C# consumer
 
 Initially F# has been choosen mostly for learning purposes. It turned out that this language is really useful (elegant, succinct, with many powerfull features) for cases where quite complex but well structured (well defined) file must be converted (mapped) into an object.
