@@ -61,10 +61,16 @@ module TypesModule =
         | ASCII
         | BINARY
 
-    type DateWithNanoseconds = {
-        DateWithSeconds : DateTime
+    type DateTimeWithNanoseconds = {
+        DateTimeWithSeconds : DateTime
         Nanoseconds : int
     }
+
+    type TimePrecission = 
+        | Milliseconds
+        | Microseconds
+        | Nanoseconds
+
            
     type CfgFile = { 
         StationName : string
@@ -77,8 +83,9 @@ module TypesModule =
         DigitalChannels : DigitalChannelInfo array
         NominalFrequencyHz : float
         SamplingRates : SamplingRateInfo
-        FirstSampleTimeStamp : DateWithNanoseconds
-        TriggerPointTimeStamp : DateWithNanoseconds
+        TimePrecission : TimePrecission
+        FirstSampleTimeStamp : DateTimeWithNanoseconds
+        TriggerPointTimeStamp : DateTimeWithNanoseconds
         FileType : FileType
         MultiplicationFactor : float
     }

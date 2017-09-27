@@ -12,10 +12,6 @@ module MappersModule =
         | 1999 -> RevisionYear.Year1999
         | _ -> RevisionYear.Year1991 
 
-    let mapSingleNumberOfChannels (numberOfChannelsString : string) = // e.g. "12A" or "3D"
-        let stringLength = numberOfChannelsString.Length
-        numberOfChannelsString.Substring(0, stringLength - 1) 
-        |> int
 
     let mapFirstLine (firstLine : string) = 
         let firstLineSplitted = firstLine.Split(splitter) 
@@ -23,6 +19,10 @@ module MappersModule =
         let recordingDeviceId = firstLineSplitted.[1]
         let revisionYear = getRevisionYear firstLineSplitted.[2]
         stationName, recordingDeviceId, revisionYear
+
+    let mapSingleNumberOfChannels (numberOfChannelsString : string) = // e.g. "12A" or "3D"
+        let stringLength = numberOfChannelsString.Length
+        numberOfChannelsString.Substring(0, stringLength - 1) |> int
 
     let mapNumberOfChannels (numberOfChannelsString : string) = // e.g. "15,12A,3D"
         let numberOfChannelsLineSplitted = numberOfChannelsString.Split(splitter)
@@ -87,26 +87,27 @@ module MappersModule =
         let samplingRateSplitted = samplingRateString.Split(splitter)
         // result
         {
-            SampleRateHz = samplingRateSplitted.[0] |> float
-            LastSampleNumber = samplingRateSplitted.[1] |> int
+            SampleRateHz = float samplingRateSplitted.[0]
+            LastSampleNumber = int samplingRateSplitted.[1]
         }
 
     let mapNanoseconds (secondsFractionString : string) = 
         match secondsFractionString.Length with
-        | 3 -> int secondsFractionString * 1000_000
-        | 6 -> int secondsFractionString * 1000
-        | 9 -> int secondsFractionString
-        | _ -> int (secondsFractionString.Substring(0,3)) 
+        | 3 -> int secondsFractionString * 1_000_000, TimePrecission.Milliseconds
+        | 6 -> int secondsFractionString * 1_000, TimePrecission.Microseconds
+        | 9 -> int secondsFractionString, TimePrecission.Nanoseconds
+        | _ -> int (secondsFractionString.Substring(0,3)), TimePrecission.Milliseconds
 
-    let mapDateTime (dateTimeString : string, revisionYear : RevisionYear) = 
+    let mapDateTimeWithNanoseconds (dateTimeString : string, revisionYear : RevisionYear) = 
         
         let dateTimeStringSplitted = dateTimeString.Split(splitter)
         
         let dateSplitted = dateTimeStringSplitted.[0].Split('/')
         let day, month, year = 
-            if revisionYear = RevisionYear.Year1991 then
+            match revisionYear with
+            | RevisionYear.Year1991 ->
                 int dateSplitted.[1], int dateSplitted.[0], int ("19" + dateSplitted.[2])
-            else
+            | _ ->
                 int dateSplitted.[0], int dateSplitted.[1], int dateSplitted.[2]
         
         let timeSplitted = dateTimeStringSplitted.[1].Split(':')
@@ -115,13 +116,13 @@ module MappersModule =
         
         let secondsSplitted = timeSplitted.[2].Split('.')
         let seconds = int secondsSplitted.[0]
-        let nanoseconds = secondsSplitted.[1] |> mapNanoseconds
+        let nanoseconds, timePrecission = secondsSplitted.[1] |> mapNanoseconds
 
-        // result DateTime
+        // result tupple : DateTimeWithNanoseconds * SecondPrecission (for dat file)
         {
-            DateWithSeconds = DateTime(year, month, day, hours, minutes, seconds)
+            DateTimeWithSeconds = DateTime(year, month, day, hours, minutes, seconds)
             Nanoseconds = nanoseconds
-        }       
+        }, timePrecission       
 
     let mapSamplingRateInfo (cfgFileLines : string[], numberOfSamplingRatesLineIndex : int, numberOfSamplingRates : int) =
         match numberOfSamplingRates with
@@ -160,13 +161,19 @@ module MappersModule =
         
         // analog channels
         let analogChannels = 
-            cfgFileLines.[firstAnalogChannelLineIndex..lastAnalogChannelLineIndex] // great feature [fromIndex..toIndex]
-            |> Array.map mapAnalogChannel
+            match numberOfAnalogChannels with
+            | 0 -> Array.empty<AnalogChannelInfo> // todo: should be None probably
+            | _ -> 
+                cfgFileLines.[firstAnalogChannelLineIndex..lastAnalogChannelLineIndex]                
+                |> Array.map mapAnalogChannel
 
         // digital channels
         let digitalChannels = 
-            cfgFileLines.[firstDigitalChannelLineIndex..lastDigitalChannelLineIndex]
-            |> Array.map mapDigitalChannel
+            match numberOfDigitalChannels with
+            | 0 -> Array.empty<DigitalChannelInfo> // todo: should be None probably
+            | _ -> 
+                cfgFileLines.[firstDigitalChannelLineIndex..lastDigitalChannelLineIndex]
+                |> Array.map mapDigitalChannel
 
         // Line frequency
         let nominalFrequencyHzLineIndex = lastDigitalChannelLineIndex + 1
@@ -185,15 +192,15 @@ module MappersModule =
         // Time Stamps
         let firstSampleTimeStampLineIndex = numberOfSamplingRatesLineIndex + numberOfSamplingRates + 1
 
-        let firstSampleTimeStamp =
+        let firstSampleTimeStamp, timePrecission =
             (cfgFileLines.[firstSampleTimeStampLineIndex], revisionYear)
-            |> mapDateTime
+            |> mapDateTimeWithNanoseconds
 
         let triggerPointTimeStampLineIndex = firstSampleTimeStampLineIndex + 1
         
-        let triggerPointTimeStamp =
+        let triggerPointTimeStamp, timePrecission =
             (cfgFileLines.[triggerPointTimeStampLineIndex], revisionYear) 
-            |> mapDateTime
+            |> mapDateTimeWithNanoseconds
 
         // File type
         let fileTypeLineIndex = triggerPointTimeStampLineIndex + 1
@@ -220,6 +227,7 @@ module MappersModule =
             DigitalChannels = digitalChannels
             NominalFrequencyHz = nominalFrequencyHz
             SamplingRates = samplingRateInfo
+            TimePrecission = timePrecission
             FirstSampleTimeStamp = firstSampleTimeStamp
             TriggerPointTimeStamp = triggerPointTimeStamp
             FileType = fileType
@@ -258,6 +266,9 @@ module MappersModule =
             SampleLines = sampleLines
         }
         
+    let mapBinaryLines (binaryDatFile : byte[], numberOfAnalogChannels : int, numberOfDigitalChannels : int) =
+        Array.empty<byte[]> // todo: divide binaryDatFile into lines of bytes - each byteLine = one sample
+
     let mapBinaryDatFile (datFileBinaryArray : byte [], numberOfAnalogChannels : int, numberOfDigitalChannels : int) = 
         //todo: convert byte[] to Ascii lines and then map using mapAsciiDatFile
         // result : SampleLines
