@@ -259,7 +259,7 @@ module MappersModule =
         }
         
     let mapBinaryDatFile (datFileBinaryArray : byte [], numberOfAnalogChannels : int, numberOfDigitalChannels : int) = 
-        //todo: convert byte[] to Ascii lines 
+        //todo: convert byte[] to Ascii lines and then map using mapAsciiDatFile
         // result : SampleLines
         { 
             SampleLines = Array.empty 
