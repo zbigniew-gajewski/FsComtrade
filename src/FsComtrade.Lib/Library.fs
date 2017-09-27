@@ -17,6 +17,13 @@ module MappersModule =
         numberOfChannelsString.Substring(0, stringLength - 1) 
         |> int
 
+    let mapFirstLine (firstLine : string) = 
+        let firstLineSplitted = firstLine.Split(splitter) 
+        let stationName = firstLineSplitted.[0]
+        let recordingDeviceId = firstLineSplitted.[1]
+        let revisionYear = getRevisionYear firstLineSplitted.[2]
+        stationName, recordingDeviceId, revisionYear
+
     let mapNumberOfChannels (numberOfChannelsString : string) = // e.g. "15,12A,3D"
         let numberOfChannelsLineSplitted = numberOfChannelsString.Split(splitter)
         let totalNumberOfChannels = numberOfChannelsLineSplitted.[0] |> int
@@ -114,13 +121,11 @@ module MappersModule =
         {
             DateWithSeconds = DateTime(year, month, day, hours, minutes, seconds)
             Nanoseconds = nanoseconds
-        }
-        
+        }       
 
     let mapSamplingRateInfo (cfgFileLines : string[], numberOfSamplingRatesLineIndex : int, numberOfSamplingRates : int) =
         match numberOfSamplingRates with
-        | 0 -> 
-            EmptySamplingRateInfo 0
+        | 0 -> EmptySamplingRateInfo 0
         | _ -> 
             let samplingRates = 
                 let firstSamplingRateLineIndex = numberOfSamplingRatesLineIndex + 1
@@ -139,17 +144,13 @@ module MappersModule =
     let mapCfgFile (cfgFileLines : string []) = 
 
         // Station name, Id, revision year (line 0)
-        let firstLine = cfgFileLines.[0]
-        let firstLineSplitted = firstLine.Split(splitter) 
-        let stationName = firstLineSplitted.[0]
-        let recordingDeviceId = firstLineSplitted.[1]
-        let revisionYear = getRevisionYear firstLineSplitted.[2]
+        let stationName, recordingDeviceId, revisionYear = 
+            cfgFileLines.[0] |> mapFirstLine
 
         // Number of channels (line 1)       
         let numberOfChannelsLineIndex = 1
         let totalNumberOfChannels, numberOfAnalogChannels, numberOfDigitalChannels = 
-            cfgFileLines.[numberOfChannelsLineIndex] 
-            |> mapNumberOfChannels
+            cfgFileLines.[numberOfChannelsLineIndex] |> mapNumberOfChannels
         
         // Analog and digital channel line indexes
         let firstAnalogChannelLineIndex = 2
@@ -170,14 +171,12 @@ module MappersModule =
         // Line frequency
         let nominalFrequencyHzLineIndex = lastDigitalChannelLineIndex + 1
         let nominalFrequencyHz = 
-            cfgFileLines.[nominalFrequencyHzLineIndex]
-            |> float
+            float cfgFileLines.[nominalFrequencyHzLineIndex]
 
         // Line numberOfSamplingRates
         let numberOfSamplingRatesLineIndex = nominalFrequencyHzLineIndex + 1
         let numberOfSamplingRates = 
-            cfgFileLines.[numberOfSamplingRatesLineIndex]
-            |> int
+            int cfgFileLines.[numberOfSamplingRatesLineIndex]
         
         let samplingRateInfo =  
             (cfgFileLines, numberOfSamplingRatesLineIndex, numberOfSamplingRates)
@@ -207,8 +206,7 @@ module MappersModule =
         let multiplicationFactorLineIndex = fileTypeLineIndex + 1
         
         let multiplicationFactor = 
-            cfgFileLines.[multiplicationFactorLineIndex]
-            |> float
+            float cfgFileLines.[multiplicationFactorLineIndex]
 
         // result : CfgFile
         { 
