@@ -1,20 +1,19 @@
-
-namespace FsComtrade.Lib.Types
+namespace Comtrade.LibFs.Types
 
 open System 
-
+  
 module TypesModule = 
-    
+
     let splitter = ','
 
-    type RevisionYear = 
+    type RevisionYear =
         | Year1991
         | Year1999
 
     type PhaseIdentifier = 
-        | Primary
+        | Primary 
         | Secondary
-
+    
     type NormalChannelState = 
         | One
         | Zero
@@ -41,20 +40,20 @@ module TypesModule =
         PrimaryFactor : float
         SecondaryFactor : float
         PrimarySecondaryIdentifier : PhaseIdentifier
-    } 
+    }
 
     type DigitalChannelInfo = {
-        ChannelInfo : ChannelInfo;
-        NormalState : NormalChannelState;
+        ChannelInfo : ChannelInfo
+        NormalState : NormalChannelState
     }
 
     type SamplingRate = {
-        SampleRateHz : float;
-        LastSampleNumber : int; 
+        SampleRateHz : float
+        LastSampleNumber : int
     }
 
-    type SamplingRateInfo =
-        | EmptySamplingRateInfo of int 
+    type SamplingRateInfo = 
+        | EmptySamplingRateInfo of  int
         | FullSamplingRateInfo of int * SamplingRate array
 
     type FileType = 
@@ -66,16 +65,15 @@ module TypesModule =
         Nanoseconds : int
     }
 
-    type TimePrecission = 
+    type TimePrcission = 
         | Milliseconds
         | Microseconds
         | Nanoseconds
 
-           
-    type CfgFile = { 
+    type CfgFile = {
         StationName : string
         RecordingDeviceId : string
-        RevisionYear :  RevisionYear
+        RevisionYear : RevisionYear
         TotalNumberOfChannels : int
         NumberOfAnalogChannels : int
         NumberOfDigitalChannels : int
@@ -83,7 +81,7 @@ module TypesModule =
         DigitalChannels : DigitalChannelInfo array
         NominalFrequencyHz : float
         SamplingRates : SamplingRateInfo
-        TimePrecission : TimePrecission
+        TimePrecission : TimePrcission
         FirstSampleTimeStamp : DateTimeWithNanoseconds
         TriggerPointTimeStamp : DateTimeWithNanoseconds
         FileType : FileType
@@ -91,8 +89,8 @@ module TypesModule =
     }
 
     type SampleLine = {
-        Number : int;
-        TimeStamp : uint64;
+        Number : int
+        TimeStamp : uint64
         AnalogSampleValues : float array
         DigitalSampleValues : Bit array
     }
@@ -105,3 +103,5 @@ module TypesModule =
         CfgFile : CfgFile
         DatFile : DatFile
     }
+
+
