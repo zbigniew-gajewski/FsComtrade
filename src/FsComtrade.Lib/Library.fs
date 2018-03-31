@@ -54,6 +54,11 @@ module MappersModule =
         {
             Index = channelInfoStringSplitted.[0] |> int
             Identifier = channelInfoStringSplitted.[1]
+            // Phase = channelInfoStringSplitted.[2] 
+            //     |> fun phaseString ->
+            //         match phaseString with
+            //         | "" -> None
+            //         | _ -> Some phaseString
             Phase = channelInfoStringSplitted.[2] |> mapPhase
             CircuitComponent = channelInfoStringSplitted.[3] |> mapCircuitComponent
         }
@@ -222,7 +227,7 @@ module MappersModule =
         }
 
 
-    // ================================================================================
+// ================================================================================
 
     let mapDatFileLine (fileLine : string, numberOfAnalogChannels : int, numberOfDigitalChannels : int) = 
         let fileLineSplitted = fileLine.Split(splitter)
@@ -246,6 +251,7 @@ module MappersModule =
                 |> Array.map mapBit
         }
 
+    
     // Variant 1 : tupples as arguments    
 
     // let mapAsciiDatFile (datFileLines : string [], numberOfAnalogChannels : int, numberOfDigitalChannels : int) = 
